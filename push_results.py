@@ -1,21 +1,37 @@
 """
-Upload results to Hugging Face dataset repository using explicit commit.
+Upload results to Hugging Face – automatically creates a new dataset repository if needed.
 """
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, create_repo
 from pathlib import Path
 import config
 import os
 
 def push_daily_result(local_path: Path):
     token = config.HF_TOKEN or os.environ.get("HF_TOKEN")
-    repo_id = config.OUTPUT_REPO
     if not token:
         print("❌ No HF_TOKEN found. Skipping upload.")
         return
 
+    # Use a dedicated repo name for this engine
+    repo_id = "P2SAMAPA/p2-etf-gplvm-anomaly-results"
+
     api = HfApi(token=token)
+
+    # Check if repository exists; if not, create it
     try:
-        # The most reliable method: upload_file with explicit commit_message
+        api.repo_info(repo_id=repo_id, repo_type="dataset")
+        print(f"✅ Repository '{repo_id}' already exists.")
+    except Exception:
+        print(f"🆕 Creating repository '{repo_id}'...")
+        try:
+            create_repo(repo_id=repo_id, repo_type="dataset", private=False, token=token)
+            print(f"✅ Created repository '{repo_id}'.")
+        except Exception as e:
+            print(f"❌ Failed to create repo: {e}")
+            return
+
+    # Upload the file
+    try:
         api.upload_file(
             path_or_fileobj=str(local_path),
             path_in_repo=local_path.name,
@@ -26,15 +42,3 @@ def push_daily_result(local_path: Path):
         print(f"✅ Uploaded {local_path.name} to {repo_id}")
     except Exception as e:
         print(f"❌ Upload failed: {e}")
-        print("   Trying alternative method...")
-        # Fallback: use requests as before
-        import requests
-        url = f"https://huggingface.co/api/datasets/{repo_id}/upload/{local_path.name}"
-        headers = {"Authorization": f"Bearer {token}"}
-        with open(local_path, "rb") as f:
-            files = {"file": (local_path.name, f, "application/json")}
-            response = requests.post(url, headers=headers, files=files)
-        if response.status_code == 200:
-            print(f"✅ Uploaded via fallback: {local_path.name}")
-        else:
-            print(f"❌ Fallback also failed: {response.status_code} {response.text}")
