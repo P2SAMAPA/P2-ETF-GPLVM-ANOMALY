@@ -32,13 +32,6 @@ st.markdown("""
         color: #555;
         margin-bottom: 2rem;
     }
-    .metric-card {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 1rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        text-align: center;
-    }
     .universe-title {
         font-size: 1.5rem;
         font-weight: 600;
@@ -77,17 +70,15 @@ st.markdown("""
 st.markdown('<div class="main-header">🌀 GPLVM + Warped GP Engine</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Nonlinear latent manifold learning | Anomaly detection | Next‑day return prediction</div>', unsafe_allow_html=True)
 
-# Sidebar
-st.sidebar.image("https://huggingface.co/front/assets/huggingface_logo-noborder.svg", use_container_width=True)
-st.sidebar.header("📊 Engine Info")
-st.sidebar.info(
-    f"**Run Date:** {st.session_state.get('run_date', 'Not loaded')}\n\n"
-    f"**Next Trading Day:** {next_trading_day()}\n\n"
-    f"**Method:** PCA + Gaussian Process regression\n\n"
-    f"**Latent dim:** auto-selected (≥95% variance)"
-)
+# Sidebar – clean and compact, no large logo
+st.sidebar.markdown("## 🧠 GPLVM Engine")
 st.sidebar.markdown("---")
-st.sidebar.caption("Data: P2SAMAPA/fi-etf-macro-signal-master-data")
+st.sidebar.markdown(f"**Run Date:** `{st.session_state.get('run_date', 'Not loaded')}`")
+st.sidebar.markdown(f"**Next Trading Day:** `{next_trading_day()}`")
+st.sidebar.markdown("**Method:** PCA + GP regression")
+st.sidebar.markdown("**Latent dim:** auto‑selected (≥95% variance)")
+st.sidebar.markdown("---")
+st.sidebar.caption("Data: [P2SAMAPA/fi-etf-macro-signal-master-data](https://huggingface.co/datasets/P2SAMAPA/fi-etf-macro-signal-master-data)")
 
 # Load data
 OUTPUT_REPO = config.OUTPUT_REPO
