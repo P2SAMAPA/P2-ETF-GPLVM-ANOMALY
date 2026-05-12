@@ -7,6 +7,11 @@ from sklearn.decomposition import PCA
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, WhiteKernel
 from sklearn.preprocessing import StandardScaler
+import warnings
+import config   # <-- added import
+
+# Suppress convergence warnings (optional)
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn.gaussian_process")
 
 class GPLVMEngine:
     def __init__(self, variance_threshold=0.95, kernel_length_scale=1.0, kernel_variance=1.0):
@@ -103,7 +108,7 @@ class GPLVMEngine:
         for i, col in enumerate(self.feature_columns):
             pred[0, i] = self.scaler_y[col].inverse_transform(pred_scaled[0, i].reshape(-1, 1)).ravel()[0]
 
-        # Return only ETF returns (exclude macro columns for trading)
-        etf_cols = [c for c in self.feature_columns if c in df.columns and c not in config.MACRO_COLUMNS]
+        # Return only ETF returns (exclude macro columns)
+        etf_cols = [c for c in self.feature_columns if c not in config.MACRO_COLUMNS]
         etf_returns = {col: pred[0, i] for i, col in enumerate(self.feature_columns) if col in etf_cols}
         return etf_returns
