@@ -3,7 +3,7 @@ Configuration for GPLVM + Warped GP Engine.
 """
 HF_TOKEN = "your_token_here"
 DATA_REPO = "P2SAMAPA/fi-etf-macro-signal-master-data"
-OUTPUT_REPO = "P2SAMAPA/p2-etf-gplvm-results"
+OUTPUT_REPO = "P2SAMAPA/p2-etf-gplvm-anomaly-results"
 
 # Universe definitions (same as before)
 UNIVERSES = {
